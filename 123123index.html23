@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Черкаси Світло</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f0f2f5; color: #333; transition: 0.5s; }
+        .card { max-width: 400px; margin: 0 auto; background: white; padding: 25px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        select, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; font-size: 16px; }
+        button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .hidden { display: none; }
+        #status-info { margin: 15px 0; font-weight: bold; text-align: center; }
+        .main-display { padding: 40px 20px; border-radius: 15px; color: white; text-align: center; margin-top: 20px; }
+        .reset-btn { background: none; color: #666; font-size: 14px; text-decoration: underline; margin-top: 20px; border: none; }
+    </style>
+</head>
+<body>
+
+<div id="setup-screen" class="card">
+    <h2>Налаштування</h2>
+    <p>Виберіть вашу адресу для визначення черги</p>
+    <select id="department"><option value="">Завантаження філій...</option></select>
+    <select id="city" class="hidden"></select>
+    <select id="street" class="hidden"></select>
+    <select id="house" class="hidden"></select>
+    <div id="status-info"></div>
+    <button id="saveBtn" class="hidden">Зберегти та переглянути графік</button>
+</div>
+
+<div id="main-screen" class="card hidden">
+    <div id="display-box" class="main-display">
+        <h1 id="light-status">Завантаження...</h1>
+        <p id="queue-label"></p>
+    </div>
+    <button class="reset-btn" onclick="resetSettings()">Змінити адресу</button>
+</div>
+
+<script>
+    // --- КОНФІГУРАЦІЯ ---
+    const API_URL = "https://cabinet.cherkasyoblenergo.com/api_new/disconn.php";
+    const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSh5p024BJEYr1VlXJst-AGCeu8zIXqfjwR7DJ_NXE4JN69qSsC1CoTI-ZaLcmn5UXjEFzlYb09p5H5/pub?output=csv";
+
+    // Елементи
+    const setupScreen = document.getElementById('setup-screen');
+    const mainScreen = document.getElementById('main-screen');
+    const statusInfo = document.getElementById('status-info');
+    const saveBtn = document.getElementById('saveBtn');
+
+    // --- ЛОГІКА ЗАПИТІВ ОБЛЕНЕРГО ---
+    async function callApi(params) {
+        const url = new URL(API_URL);
+        Object.keys(params).forEach(key => url.searchParams.append(key, params[key]));
+        try {
+            const response = await fetch(url);
+            return await response.json();
+        } catch (e) {
+            console.error("Помилка API:", e);
+            return null;
+        }
+    }
+
+    async function loadDepartments() {
+        const data = await callApi({ op: 'department_list' });
+        const deptSelect = document.getElementById('department');
+        deptSelect.innerHTML = '<option value="">Оберіть філію</option>';
+        if (data) data.forEach(item => deptSelect.innerHTML += `<option value="${item.ID}">${item.NAME}</option>`);
+    }
+
+    document.getElementById('department').addEventListener('change', async (e) => {
+        const citySelect = document.getElementById('city');
+        statusInfo.innerText = "Завантаження міст...";
+        const data = await callApi({ op: 'city_list', dept_id: e.target.value });
+        citySelect.innerHTML = '<option value="">Оберіть місто/село</option>';
+        data.forEach(item => citySelect.innerHTML += `<option value="${item.ID}">${item.NAME}</option>`);
+        citySelect.classList.remove('hidden');
+        statusInfo.innerText = "";
+    });
+
+    document.getElementById('city').addEventListener('change', async (e) => {
+        const streetSelect = document.getElementById('street');
+        statusInfo.innerText = "Завантаження вулиць...";
+        const data = await callApi({ op: 'street_list', city_id: e.target.value });
+        streetSelect.innerHTML = '<option value="">Оберіть вулицю</option>';
+        data.forEach(item => streetSelect.innerHTML += `<option value="${item.ID}">${item.NAME}</option>`);
+        streetSelect.classList.remove('hidden');
+        statusInfo.innerText = "";
+    });
+
+    document.getElementById('street').addEventListener('change', async (e) => {
+        const houseSelect = document.getElementById('house');
+        statusInfo.innerText = "Завантаження будинків...";
+        const data = await callApi({ op: 'house_list', street_id: e.target.value, search_name: '' });
+        houseSelect.innerHTML = '<option value="">№ будинку</option>';
+        if (data) data.forEach(item => houseSelect.innerHTML += `<option value="${item.HOUSE}">${item.HOUSE}</option>`);
+        houseSelect.classList.remove('hidden');
+        statusInfo.innerText = "";
+    });
+
+    document.getElementById('house').addEventListener('change', async (e) => {
+        statusInfo.innerText = "Визначаємо чергу...";
+        const lsData = await callApi({ op: 'ls_list_by_addr', street_id: document.getElementById('street').value, house: e.target.value });
+        
+        let ls = (Array.isArray(lsData)) ? lsData[0].LS : (lsData ? lsData.LS : null);
+        
+        if (ls) {
+            const now = new Date();
+            const dateStr = `${String(now.getDate()).padStart(2,'0')}.${String(now.getMonth()+1).padStart(2,'0')}.${now.getFullYear()}`;
+            const qData = await callApi({ op: 'disconn_by_ls', disconn_selector: 2, n_date: dateStr, k_date: dateStr, abon_ls: ls });
+            
+            if (qData && qData.DISCONN_QUEUQ && qData.DISCONN_QUEUQ[1]) {
+                const text = qData.DISCONN_QUEUQ[1].QUEUE_INFO;
+                const matches = text.match(/\d+/g);
+                const queue = matches ? matches.join('.') : "Не визначено";
+                localStorage.setItem('user_queue', queue);
+                statusInfo.innerHTML = `Ваша черга: <span style="color:#27ae60">${queue}</span>`;
+                saveBtn.classList.remove('hidden');
+            }
+        }
+    });
+
+    // --- ЛОГІКА ГРАФІКА З ТАБЛИЦІ ---
+    async function updateScheduleDisplay() {
+        try {
+            const queue = localStorage.getItem('user_queue');
+            if (!queue) return showSetup();
+
+            setupScreen.classList.add('hidden');
+            mainScreen.classList.remove('hidden');
+
+            const statusLabel = document.getElementById('light-status');
+            const box = document.getElementById('display-box');
+            document.getElementById('queue-label').innerText = `Черга: ${queue}`;
+
+            statusLabel.innerText = "Оновлення...";
+
+            const res = await fetch(SHEET_CSV_URL);
+            const csv = await res.text();
+            const rows = csv.split('\n');
+            let hoursStr = "";
+
+            for (let row of rows) {
+                const cols = row.split(',');
+                if (cols[0] && cols[0].replace(/["']/g, "").trim() === queue) {
+                    hoursStr = cols[1] ? cols[1].replace(/["']/g, "").trim() : "";
+                    break;
+                }
+            }
+
+            if (!hoursStr) {
+                statusLabel.innerText = "Графік не введено";
+                box.style.backgroundColor = "#95a5a6";
+                return;
+            }
+
+            const currentHour = new Date().getHours();
+            let isOff = false;
+
+            // РОЗУМНА ПЕРЕВІРКА ЧАСУ (для формату 02:00 - 04:00)
+            const timeBlocks = hoursStr.split(',');
+
+            timeBlocks.forEach(block => {
+                block = block.trim();
+                if (block.includes('-')) {
+                    // Розбиваємо "02:00 - 04:00" на ["02:00", "04:00"]
+                    const parts = block.split('-');
+
+                    // Витягуємо годину: беремо частину до двокрапки та перетворюємо в число
+                    const startHour = parseInt(parts[0].split(':')[0].trim());
+                    const endHour = parseInt(parts[1].split(':')[0].trim());
+
+                    // Перевірка: якщо зараз година між початком і кінцем
+                    if (currentHour >= startHour && currentHour < endHour) {
+                        isOff = true;
+                    }
+                }
+            });
+
+            if (isOff) {
+                box.style.backgroundColor = "#e74c3c"; // Червоний
+                statusLabel.innerText = "СВІТЛА НЕМАЄ";
+                document.body.style.background = "#f8d7da";
+            } else {
+                box.style.backgroundColor = "#27ae60"; // Зелений
+                statusLabel.innerText = "СВІТЛО Є";
+                document.body.style.background = "#d4edda";
+            }
+
+        } catch (e) {
+            console.error("Помилка:", e);
+            document.getElementById('light-status').innerText = "Помилка таблиці";
+        }
+    }
+
+    // --- КЕРУВАННЯ ЕКРАНАМИ ---
+    function showSetup() {
+        localStorage.removeItem('user_queue');
+        setupScreen.classList.remove('hidden');
+        mainScreen.classList.add('hidden');
+        loadDepartments();
+    }
+
+    function resetSettings() {
+        if(confirm("Змінити адресу та чергу?")) showSetup();
+    }
+
+    saveBtn.addEventListener('click', updateScheduleDisplay);
+
+    // Старт програми
+    if (localStorage.getItem('user_queue')) {
+        updateScheduleDisplay();
+        setInterval(updateScheduleDisplay, 60000); // Оновлювати щохвилини
+    } else {
+        loadDepartments();
+    }
+</script>
+</body>
+</html>
