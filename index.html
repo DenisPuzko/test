@@ -10,10 +10,10 @@
         :root {
             --bg-body: #f8f9fa;
             --card-bg: #ffffff;
-            --off-blue: #1a2b41;
+            --off-gray: #333333;
             --on-border: #e9ecef;
             --accent-yellow: #d71111;
-            --primary-blue: #007bff;
+            --primary-yellow: #ff6c00;
         }
 
         body {
@@ -38,7 +38,7 @@
         }
 
         select, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; font-size: 16px; }
-        .save-btn { background: var(--primary-blue); color: white; border: none; font-weight: bold; cursor: pointer; }
+        .save-btn { background: var(--primary-yellow); color: white; border: none; font-weight: bold; cursor: pointer; }
         .hidden { display: none; }
 
         /* Стилі твоєї сітки */
@@ -74,13 +74,13 @@
 
         .slot span { position: relative; z-index: 2; color: #ffffff; mix-blend-mode: difference; }
 
-        .slot.off { background-color: var(--off-blue); border-color: var(--off-blue); }
-        .slot.split-start { background: linear-gradient(90deg, #fff 50%, var(--off-blue) 50%); }
-        .slot.split-end { background: linear-gradient(90deg, var(--off-blue) 50%, #fff 50%); }
+        .slot.off { background-color: var(--off-gray); border-color: var(--off-gray); }
+        .slot.split-start { background: linear-gradient(90deg, #fff 50%, var(--off-gray) 50%); }
+        .slot.split-end { background: linear-gradient(90deg, var(--off-gray) 50%, #fff 50%); }
 
         .days-nav { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
         .day { font-weight: bold; color: #555; padding: 5px 10px; }
-        .day.active { color: var(--primary-blue); border-bottom: 3px solid var(--primary-blue); }
+        .day.active { color: var(--primary-yellow); border-bottom: 3px solid var(--primary-yellow); }
 
         .status-bar { margin-top: 15px; font-size: 12px; color: #888; text-align: center; }
         .reset-link { color: #888; text-decoration: underline; cursor: pointer; font-size: 12px; display: block; margin-top: 20px; text-align: center; }
@@ -176,7 +176,7 @@
         const text = qData.DISCONN_QUEUQ[1].QUEUE_INFO;
         const queue = text.match(/\d+/g).join('.');
         localStorage.setItem('user_queue', queue);
-        document.getElementById('setup-info').innerHTML = `Ваша черга: <span style="color:var(--primary-blue)">${queue}</span>`;
+        document.getElementById('setup-info').innerHTML = `Ваша черга: <span style="color:var(--primary-yellow)">${queue}</span>`;
         document.getElementById('saveBtn').classList.remove('hidden');
     });
 
@@ -210,7 +210,7 @@
         for (let h = 0; h < 24; h++) {
             const div = document.createElement('div');
             div.className = 'slot';
-            if (h === new Date().getHours()) div.style.boxShadow = "inset 0 0 0 2px var(--primary-blue)";
+            if (h === new Date().getHours()) div.style.boxShadow = "inset 0 0 0 2px var(--primary-yellow)";
 
             const span = document.createElement('span');
             span.textContent = h.toString().padStart(2, '0') + ':00';
@@ -310,8 +310,8 @@
 
             // Підсвітка поточної години
             if (h === new Date().getHours()) {
-                div.style.border = "2px solid var(--primary-blue)";
-                div.style.backgroundColor = "rgba(0, 123, 255, 0.05)";
+                div.style.border = "2px solid var(--primary-yellow)";
+                div.style.backgroundColor = "rgba(255,108,0,0.07)";
             }
 
             const span = document.createElement('span');
