@@ -266,6 +266,17 @@
             transform: rotate(225deg);
             margin-top: 4px;
         }
+        #mainGrid {
+            transition: opacity 0.2s ease-in-out;
+        }
+        /* Можна додати клас для миттєвого фейд-іну при зміні дня */
+        .fade-in {
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -643,6 +654,39 @@
         makeSearchable('house');
     }
     initSearchables();
+    // --- ЛОГІКА СВАЙПІВ ---
+    let touchstartX = 0;
+    let touchendX = 0;
+
+    // Чутливість свайпу (мінімальна відстань у пікселях)
+    const minSwipeDistance = 50;
+
+    const gestureZone = document.getElementById('main-screen');
+
+    gestureZone.addEventListener('touchstart', e => {
+        touchstartX = e.changedTouches[0].screenX;
+    }, false);
+
+    gestureZone.addEventListener('touchend', e => {
+        touchendX = e.changedTouches[0].screenX;
+        handleGesture();
+    }, false);
+
+    function handleGesture() {
+        const diff = touchstartX - touchendX;
+
+        if (Math.abs(diff) > minSwipeDistance) {
+            if (diff > 0) {
+                // Свайп вліво -> Наступний день
+                let nextDay = (currentViewDay + 1) > 6 ? 0 : currentViewDay + 1;
+                changeDay(nextDay);
+            } else {
+                // Свайп вправо -> Попередній день
+                let prevDay = (currentViewDay - 1) < 0 ? 6 : currentViewDay - 1;
+                changeDay(prevDay);
+            }
+        }
+    }
 </script>
 
 </body>
