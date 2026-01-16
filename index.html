@@ -19,11 +19,12 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background-color: var(--bg-body);
-            display: flex;
+            /*display: flex;*/
             flex-direction: column;
             align-items: center;
             padding: 20px 15px;
             margin: 0;
+            text-align: center;
         }
 
         /* Стилі для екрану налаштувань */
@@ -35,6 +36,8 @@
             width: 100%;
             max-width: 400px;
             box-sizing: border-box;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         select, button { width: 100%; padding: 14px; margin: 10px 0; border-radius: 10px; border: 1px solid #ddd; font-size: 16px; }
@@ -47,9 +50,12 @@
             padding: 24px;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-left: auto;
+            margin-right: auto;
             width: 100%;
             max-width: 400px;
             box-sizing: border-box;
+            text-align: left;
         }
 
         .grid {
@@ -78,9 +84,24 @@
         .slot.split-start { background: linear-gradient(90deg, #fff 50%, var(--off-gray) 50%); }
         .slot.split-end { background: linear-gradient(90deg, var(--off-gray) 50%, #fff 50%); }
 
-        .days-nav { display: flex; justify-content: space-between; border-bottom: 1px solid #eee; margin-bottom: 20px; padding-bottom: 10px; }
-        .day { font-weight: bold; color: #555; padding: 5px 10px; }
-        .day.active { color: var(--primary-yellow); border-bottom: 3px solid var(--primary-yellow); }
+        .days-nav {
+            display: flex;
+            width: 100%;
+            justify-content: space-between;
+            margin-bottom: 20px;}
+        .day {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #888;
+            border-bottom: 2px solid transparent;}
+
+        .day.active {
+            color: var(--primary-yellow);
+            border-bottom: 2px solid var(--primary-yellow);}
 
         .status-bar { margin-top: 15px; font-size: 12px; color: #888; text-align: center; }
         .reset-link { color: #888; text-decoration: underline; cursor: pointer; font-size: 12px; display: block; margin-top: 20px; text-align: center; }
@@ -88,7 +109,6 @@
             border: none !important;
             position: relative;
             z-index: 10;
-            /* 1-ша тінь: колір фону сторінки (2px), 2-га тінь: помаранчевий (5px) */
             box-shadow: 0 0 0 2px var(--bg-body), 0 0 0 5px var(--primary-yellow) !important;
         }
 
@@ -113,6 +133,139 @@
         .dot.on { background-color: #ffffff; }
         .dot.off { background-color: var(--off-gray); }
         .dot.maybe { background: linear-gradient(90deg, #fff 50%, var(--off-gray) 50%); }
+        .header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+        }
+        #queueLabel {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-yellow);
+            position: relative;
+            padding-bottom: 8px;
+        }
+        #queueLabel::after {
+            content: "";
+            position: absolute;
+            bottom: -9px; /* Накладаємо на основну лінію */
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary-yellow);
+        }
+        #todayDate {
+            font-size: 16px;
+            font-weight: bold;
+            color: #555;
+            padding-bottom: 8px;
+        }
+        .custom-select-wrapper {
+            position: relative;
+            width: 100%;
+            margin: 10px 0;
+        }
+        .custom-select-wrapper.hidden {
+            display: none;
+        }
+        .select-trigger {
+            width: 100%;
+            padding: 14px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box; /* Важливо, щоб не вилазило за край */
+        }
+        .custom-options {
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid var(--on-border);
+            border-radius: 12px;
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15); /* Тінь як у основної картки */
+        }
+
+        .custom-options.open { display: block; }
+
+        .search-box-inside {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            padding: 10px;
+            border-bottom: 1px solid var(--on-border);
+            z-index: 2;
+        }
+        .search-box-inside input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--on-border);
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: var(--bg-body);
+        }
+        .search-box-inside input:focus {
+            border-color: var(--primary-yellow);
+            outline: none;
+        }
+        .custom-option {
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #444;
+            transition: 0.2s;
+            border-bottom: 1px solid #f9f9f9;
+        }
+        .custom-option:last-child { border-bottom: none; }
+        .custom-option:hover {
+            background: #fff8f4;
+            color: var(--primary-yellow);
+        }
+        .custom-option.hidden { display: none; }
+        .custom-options::-webkit-scrollbar { width: 6px; }
+        .custom-options::-webkit-scrollbar-track { background: transparent; }
+        .custom-options::-webkit-scrollbar-thumb {
+            background: #ddd;
+            border-radius: 10px;
+        }
+        .select-trigger .arrow {
+            border: solid #666;    /* Колір стрілки (сірий, не чорний) */
+            border-width: 0 2px 2px 0; /* Товщина ліній - 2px для тонкого вигляду */
+            display: inline-block;
+            padding: 4px;          /* Розмір стрілки */
+            transform: rotate(45deg); /* Повертаємо квадрат, щоб вийшла галочка вниз */
+            margin-top: -5px;      /* Трохи піднімаємо для центрування */
+            margin-right: 5px;     /* Відступ справа */
+            transition: transform 0.3s ease; /* Плавна анімація повороту */
+        }
+        .custom-select-wrapper.open .select-trigger .arrow {
+            transform: rotate(225deg); /* Повертаємо вгору */
+            margin-top: 2px; /* Коригуємо положення */
+        }
+        .custom-select-wrapper.open .custom-options {
+            display: block;
+        }
+        .custom-select-wrapper.open .arrow {
+            transform: rotate(225deg);
+            margin-top: 4px;
+        }
     </style>
 </head>
 <body>
@@ -120,22 +273,39 @@
 <div id="setup-screen" class="card">
     <h2 style="margin-top:0">Налаштування</h2>
     <p style="font-size:14px; color: #666;">Оберіть адресу, щоб дізнатися чергу</p>
+
     <select id="department"><option value="">Завантаження філій...</option></select>
+
     <select id="city" class="hidden"></select>
+
     <select id="street" class="hidden"></select>
+
     <select id="house" class="hidden"></select>
+
     <div id="setup-info" style="text-align:center; font-weight:bold; margin: 10px 0;"></div>
     <button id="saveBtn" class="save-btn hidden">Показати графік</button>
 </div>
 
-<div id="main-screen" class="hidden" style="width:100%; max-width:400px;">
+<div id="main-screen" class="hidden">
     <div class="schedule-card">
-        <div class="days-nav" id="currentDateNav">
-            <span class="day active" id="queueLabel">Черга</span>
-            <span class="day" id="todayDate">Дата</span>
+        <div class="header-row">
+            <div id="queueLabel">Черга</div>
+            <div id="todayDate">Дата</div>
         </div>
+
+        <div class="days-nav" id="weekNav">
+            <div class="day" onclick="changeDay(0)">Пн</div>
+            <div class="day" onclick="changeDay(1)">Вт</div>
+            <div class="day" onclick="changeDay(2)">Ср</div>
+            <div class="day" onclick="changeDay(3)">Чт</div>
+            <div class="day" onclick="changeDay(4)">Пт</div>
+            <div class="day" onclick="changeDay(5)">Сб</div>
+            <div class="day" onclick="changeDay(6)">Нд</div>
+        </div>
+
         <div class="grid" id="mainGrid"></div>
         <div class="status-bar" id="updateStatus">Оновлення...</div>
+
         <div class="legend">
             <div class="legend-item">
                 <div class="dot current"></div>
@@ -159,6 +329,9 @@
 </div>
 
 <script>
+    let schedules = { 0:"", 1:"", 2:"", 3:"", 4:"", 5:"", 6:"" }; // Сховище для 7 днів
+    let currentViewDay = (new Date().getDay() === 0) ? 6 : new Date().getDay() - 1; // Поточний день (0-Пн, 6-Нд)
+
     // --- КОНФІГУРАЦІЯ ---
     const API_URL = "https://cabinet.cherkasyoblenergo.com/api_new/disconn.php";
     const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSh5p024BJEYr1VlXJst-AGCeu8zIXqfjwR7DJ_NXE4JN69qSsC1CoTI-ZaLcmn5UXjEFzlYb09p5H5/pub?output=csv"; // ВСТАВ СЮДИ CSV ПОСИЛАННЯ
@@ -233,13 +406,29 @@
         const now = new Date();
         const hour = now.getHours();
         const min = now.getMinutes();
-       }
+    }
 
-    function drawSchedule(scheduleText) {
+    function drawSchedule(scheduleText, isToday) {
         mainGrid.innerHTML = '';
-        globalSlots.fill(0);
 
+        // ПЕРЕВІРКА: Якщо даних немає або вони порожні
+        if (!scheduleText || scheduleText.trim() === "" || scheduleText === '""') {
+            const noDataMsg = document.createElement('div');
+            noDataMsg.style.gridColumn = "1 / -1"; // Розтягуємо на всю ширину сітки
+            noDataMsg.style.textAlign = "center";
+            noDataMsg.style.padding = "40px 0";
+            noDataMsg.style.color = "#888";
+            noDataMsg.style.fontWeight = "bold";
+            noDataMsg.innerHTML = "⚡ Графіка на цей день<br>ще немає";
+
+            mainGrid.appendChild(noDataMsg);
+            return; // Зупиняємо функцію, щоб не малювати порожні слоти
+        }
+
+        globalSlots.fill(0);
         const intervals = scheduleText.split(',').map(i => i.trim());
+
+        // ... далі твій існуючий код розрахунку інтервалів ...
         intervals.forEach(interval => {
             const parts = interval.split('-').map(p => p.trim());
             if (parts.length === 2) {
@@ -247,32 +436,19 @@
                 const [eH, eM] = parts[1].split(':').map(Number);
 
                 for (let h = 0; h < 24; h++) {
-                    // Визначаємо стан для кожної години окремо
                     const isFullOff = (h > sH && h < eH);
                     const isStartHour = (h === sH);
                     const isEndHour = (h === eH);
 
                     if (isFullOff) {
-                        globalSlots[h] = 1; // Повністю чорний
+                        globalSlots[h] = 1;
                     } else {
-                        // Якщо година є початком
                         if (isStartHour) {
-                            if (sM >= 30) {
-                                // Якщо початок о 17:30, то 17:00-17:30 світло (Type 2)
-                                globalSlots[h] = (globalSlots[h] === 3) ? 1 : 2;
-                            } else {
-                                // Якщо початок о 17:00, то вся година темна
-                                globalSlots[h] = 1;
-                            }
+                            globalSlots[h] = (sM >= 30) ? 2 : 1;
                         }
-                        // Якщо година є кінцем (працює окремо, не через else!)
                         if (isEndHour) {
                             if (eM >= 30) {
-                                // Якщо кінець о 17:30, то 17:00-17:30 темно (Type 3)
                                 globalSlots[h] = (globalSlots[h] === 2) ? 1 : 3;
-                            } else if (eM === 0 && h > sH) {
-                                // Якщо закінчується рівно в 00 хв наступної години
-                                // нічого не робимо, година вже оброблена як світла або через h < eH
                             }
                         }
                     }
@@ -284,7 +460,7 @@
         for (let h = 0; h < 24; h++) {
             const div = document.createElement('div');
             div.className = 'slot';
-            if (h === currentHour) div.classList.add('current');
+            if (isToday && h === currentHour) div.classList.add('current');
 
             const span = document.createElement('span');
             span.textContent = h.toString().padStart(2, '0') + ':00';
@@ -306,39 +482,31 @@
         setupScreen.classList.add('hidden');
         mainScreen.classList.remove('hidden');
         document.getElementById('queueLabel').innerText = `Черга ${queue}`;
-        document.getElementById('todayDate').innerText = new Date().toLocaleDateString('uk-UA', {day:'numeric', month:'short'});
 
         try {
             const res = await fetch(SHEET_CSV_URL);
             const csv = await res.text();
             const rows = csv.split('\n');
+            const headers = rows[0].split(',').map(h => h.replace(/"/g, '').trim());
 
-            let schedule = "";
+            // Назви стовпчиків, які ти напишеш у таблиці
+            const dayNames = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"];
 
-            for (let row of rows) {
-                // ШУКАЄМО ПЕРШУ КОМУ (вона розділяє Чергу і Розклад)
-                const firstCommaIndex = row.indexOf(',');
-                if (firstCommaIndex === -1) continue;
-
-                const rowQueue = row.substring(0, firstCommaIndex).replace(/"/g, '').trim();
-
-                if (rowQueue === queue) {
-                    // БЕРЕМО ВСЕ, що йде після першої коми (це і є наш повний розклад)
-                    schedule = row.substring(firstCommaIndex + 1).replace(/"/g, '').trim();
+            for (let i = 1; i < rows.length; i++) {
+                const parts = rows[i].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                if (parts[0].replace(/"/g, '').trim() === queue) {
+                    // Записуємо графік для кожного знайденого дня
+                    dayNames.forEach((name, index) => {
+                        const colIdx = headers.indexOf(name);
+                        schedules[index] = colIdx !== -1 ? parts[colIdx].replace(/"/g, '').trim() : "";
+                    });
                     break;
                 }
             }
-
-            if (schedule) {
-                // Очищаємо від спецсимволів Google Таблиць (нерозривні пробіли тощо)
-                const cleanSchedule = schedule.replace(/[\u00A0\u1680\u180e\u2000-\u200b\u202f\u205f\u3000]/g, " ");
-                drawSchedule(cleanSchedule);
-                document.getElementById('updateStatus').innerText = `Оновлено: ${new Date().toLocaleTimeString()}`;
-            } else {
-                document.getElementById('updateStatus').innerText = "Графік на сьогодні відсутній";
-            }
+            changeDay(currentViewDay); // Малюємо сьогоднішній день
+            document.getElementById('updateStatus').innerText = `Оновлено: ${new Date().toLocaleTimeString()}`;
         } catch (e) {
-            console.error("Помилка завантаження CSV:", e);
+            document.getElementById('updateStatus').innerText = "Помилка завантаження";
         }
     }
 
@@ -358,6 +526,123 @@
     } else {
         initSetup();
     }
+    function changeDay(index) {
+        currentViewDay = index;
+
+        // 1. Оновлюємо активну вкладку
+        const tabs = document.querySelectorAll('.day');
+        tabs.forEach((tab, i) => tab.classList.toggle('active', i === index));
+
+        // 2. Оновлюємо текст дати (напр. "17 січ.")
+        const d = new Date();
+        // Розраховуємо дату вибраного дня тижня
+        const currentRealDay = (d.getDay() === 0) ? 6 : d.getDay() - 1;
+        const diff = index - currentRealDay;
+        d.setDate(d.getDate() + diff);
+
+        const day = d.getDate();
+        const month = d.toLocaleString('uk-UA', { month: 'short' }).replace('.', '');
+        document.getElementById('todayDate').innerText = `${day} ${month}.`;
+
+        // 3. Малюємо графік
+        const realToday = (new Date().getDay() === 0) ? 6 : new Date().getDay() - 1;
+        drawSchedule(schedules[index], index === realToday);
+    }
+    function makeSearchable(selectId) {
+        const realSelect = document.getElementById(selectId);
+        if (!realSelect) return;
+
+        // ЗАХИСТ: Якщо ми вже створили пошук для цього елемента, не робимо це вдруге
+        if (realSelect.nextElementSibling && realSelect.nextElementSibling.classList.contains('custom-select-wrapper')) {
+            return;
+        }
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-select-wrapper';
+        if (realSelect.classList.contains('hidden')) wrapper.classList.add('hidden');
+        realSelect.parentNode.insertBefore(wrapper, realSelect);
+
+        const trigger = document.createElement('div');
+        trigger.className = 'select-trigger';
+        // Використовуємо тонку стрілку
+        trigger.innerHTML = `<span>${realSelect.options[realSelect.selectedIndex]?.text || 'Оберіть...'}</span> <span class="arrow"></span>`;
+        wrapper.appendChild(trigger);
+
+        const optionsContainer = document.createElement('div');
+        optionsContainer.className = 'custom-options';
+
+        const searchWrapper = document.createElement('div');
+        searchWrapper.className = 'search-box-inside';
+        searchWrapper.innerHTML = `<input type="text" placeholder="Пошук...">`;
+        const searchInput = searchWrapper.querySelector('input');
+        optionsContainer.appendChild(searchWrapper);
+
+        const listContainer = document.createElement('div');
+        optionsContainer.appendChild(listContainer);
+        wrapper.appendChild(optionsContainer);
+
+        const refreshUI = () => {
+            listContainer.innerHTML = '';
+            if (realSelect.classList.contains('hidden')) wrapper.classList.add('hidden');
+            else wrapper.classList.remove('hidden');
+
+            trigger.querySelector('span').textContent = realSelect.options[realSelect.selectedIndex]?.text || realSelect.options[0]?.text;
+
+            Array.from(realSelect.options).forEach((opt, index) => {
+                if (opt.value === "" && index === 0) return;
+                const div = document.createElement('div');
+                div.className = 'custom-option';
+                div.textContent = opt.text;
+                div.onclick = (e) => {
+                    e.stopPropagation(); // Зупиняємо подію, щоб не спрацював клік по тригеру
+                    realSelect.value = opt.value;
+                    trigger.querySelector('span').textContent = opt.text;
+
+                    // ВИПРАВЛЕННЯ: Закриваємо меню через wrapper для роботи анімації стрілки
+                    wrapper.classList.remove('open');
+
+                    realSelect.dispatchEvent(new Event('change'));
+                };
+                listContainer.appendChild(div);
+            });
+        };
+
+        const observer = new MutationObserver(() => refreshUI());
+        observer.observe(realSelect, { childList: true, attributes: true, attributeFilter: ['class'] });
+
+        trigger.onclick = (e) => {
+            e.stopPropagation();
+            const isOpen = wrapper.classList.contains('open');
+            // Закриваємо всі інші відкриті списки
+            document.querySelectorAll('.custom-select-wrapper').forEach(el => el.classList.remove('open'));
+
+            if (!isOpen) {
+                wrapper.classList.add('open');
+                setTimeout(() => searchInput.focus(), 10);
+            }
+        };
+
+        searchInput.oninput = () => {
+            const filter = searchInput.value.toLowerCase();
+            listContainer.querySelectorAll('.custom-option').forEach(option => {
+                option.classList.toggle('hidden', !option.textContent.toLowerCase().includes(filter));
+            });
+        };
+
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) wrapper.classList.remove('open');
+        });
+
+        realSelect.style.display = 'none';
+        refreshUI();
+    }
+    function initSearchables() {
+        makeSearchable('department');
+        makeSearchable('city');
+        makeSearchable('street');
+        makeSearchable('house');
+    }
+    initSearchables();
 </script>
 
 </body>
