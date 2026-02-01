@@ -338,6 +338,10 @@
             text-decoration: none;
         }
     </style>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2196f3">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
@@ -756,6 +760,13 @@
     document.getElementById('disclaimer-modal').addEventListener('click', function(e) {
         if (e.target === this) toggleDisclaimer();
     });
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('PWA: Service Worker зареєстровано!'))
+                .catch(err => console.log('PWA: Помилка SW:', err));
+        });
+    }
 </script>
 
 <div id="disclaimer-modal" class="modal-overlay hidden">
