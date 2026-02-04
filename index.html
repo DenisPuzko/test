@@ -350,7 +350,15 @@
         OneSignalDeferred.push(async function(OneSignal) {
             await OneSignal.init({
                 appId: "87c9b514-87ff-4a4e-b1a4-5acd126a9e81",
+                // ПРИМУСОВІ ШЛЯХИ ДЛЯ GITHUB PAGES ПІДПАПКИ:
+                serviceWorkerPath: "OneSignalSDKWorker.js",
+                serviceWorkerParam: { scope: "/test/" },
             });
+
+            // Показуємо вікно підписки через 3 секунди
+            setTimeout(() => {
+                OneSignal.Slidedown.promptPush();
+            }, 1000);
         });
     </script>
 </head>
