@@ -344,21 +344,22 @@
     <link rel="apple-touch-icon" href="icon-192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <script src="/test/https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
     <script>
         window.OneSignalDeferred = window.OneSignalDeferred || [];
         OneSignalDeferred.push(async function(OneSignal) {
             await OneSignal.init({
                 appId: "87c9b514-87ff-4a4e-b1a4-5acd126a9e81",
-                // ПРИМУСОВІ ШЛЯХИ ДЛЯ GITHUB PAGES ПІДПАПКИ:
-                serviceWorkerPath: "OneSignalSDKWorker.js",
+
+                // Вказуємо ШЛЯХ ВІД КОРЕНЯ (з початковим слешем)
+                serviceWorkerPath: "test/OneSignalSDKWorker.js",
                 serviceWorkerParam: { scope: "/test/" },
+
+                allowLocalhostAsSecureOrigin: true,
             });
 
-            // Показуємо вікно підписки через 3 секунди
-            setTimeout(() => {
-                OneSignal.Slidedown.promptPush();
-            }, 1000);
+            // Перевірка в консолі: чи бачить OneSignal твій шлях
+            console.log("OneSignal конфіг завантажено для /test/");
         });
     </script>
 </head>
